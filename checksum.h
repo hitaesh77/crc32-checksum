@@ -7,4 +7,4 @@ void initialize_checksum_table(void);
 uint32_t compute_checksum(const void* data, size_t size);
 
 // NAIVE CHECKSUM
-uint32_t compute_checksum_naive(const void* data, size_t length);
+uint32_t compute_checksum_naive(const uint8_t* data, size_t length);
