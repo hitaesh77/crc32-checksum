@@ -58,26 +58,21 @@ uint32_t compute_checksum(const void* data, size_t size) {
 // }
 
 uint32_t compute_checksum_naive(const uint8_t* data, size_t length) {
-    uint32_t crc = 0xFFFFFFFF; // Initial value for CRC-32
+    uint32_t crc = 0xFFFFFFFFu;
 
-    for (size_t i = 0; i < length; ++i) {
-        printf("iter #: %d ", i);
-        printf("current byte: %02X ", data[i]);
+    for (size_t i = 0; i < length; i++) {
+        crc ^= data[i];
 
-        crc ^= (data[i] << 24); // XOR the current byte with crc
-        printf("curr iter crc: %08X \n", crc);
-        for (int j = 0; j < 8; ++j) { // Process bits from MSB to LSB
-            if ((crc & (1 << 31)) == 1) { // Check the most significant bit
+        for (int bit = 0; bit < 8; bit++) {
+            if (crc & 1) {
                 crc = (crc >> 1) ^ POLYNOMIAL;
             } else {
-                crc >>= 1; // Shift left by 1 bit
+                crc >>= 1;
             }
         }
     }
-    
-    printf("final before return crc: %08X \n", crc); 
 
-    return crc ^ 0xFFFFFFFF; // Final XOR to get the checksum value
+    return crc ^ 0xFFFFFFFFu;
 }
 
 // uint32_t compute_checksum_naive(const uint8_t* data, size_t length) {
