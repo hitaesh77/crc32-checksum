@@ -42,9 +42,9 @@ int main() {
     // array of implementations being tested
     std::vector<crcImpl> implementations = {
         {"naive", compute_checksum_naive},
+        {"table", compute_checksum_table},
 
         // Later:
-        // {"table", compute_checksum_table},
         // {"fast", compute_checksum_fast},
     };
 
