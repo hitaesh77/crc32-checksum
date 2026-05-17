@@ -7,6 +7,8 @@
 // the slow, bit-by-bit calculation
 uint32_t compute_checksum_naive(const uint8_t* data, size_t length);
 uint32_t compute_checksum_table(const uint8_t* data, size_t length);
+uint32_t compute_checksum_four_slice(const uint8_t* data, size_t length);
+uint32_t compute_checksum_eight_slice(const uint8_t* data, size_t length);
 
 // Future implementations can go here later.
 // uint32_t compute_checksum_fast(const uint8_t* data, size_t length);

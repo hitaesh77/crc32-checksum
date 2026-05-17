@@ -42,7 +42,7 @@ Several CRC32 implementations are being written and tested:
 
 - Naive bit-by-bit CRC32
 - Table-based CRC32 with a compile-time generated lookup table
-- Faster optimized CRC32 versions, planned
+- Slicing by 4 Table-based CRC32 with a 4x256 compile-time generated lookup table
 - `zlib` CRC32 reference comparison
 
 All implementations are run through the same correctness tests and benchmarks.
@@ -127,17 +127,19 @@ g++ -std=c++17 -O2 -Wall -Wextra -DHAS_ZLIB main.cpp checksum.cpp test_common.cp
 
 | Implementation | Time | Throughput |
 |---|---:|---:|
-| naive | 3.586249 sec | 27.88 MiB/s |
-| table | 0.921510 sec | 108.52 MiB/s |
-| zlib | 0.254647 sec | 392.70 MiB/s |
+| naive | 2.162318 sec | 46.25 MiB/s |
+| table | 0.412293 sec | 242.55 MiB/s |
+| 4-slice | 0.154004 sec | 649.33 MiB/s |
+| zlib | 0.089788 sec | 1113.73 MiB/s |
 
 ### Encoded TickDB Payload, 100k Ticks, 100 Iterations
 
 | Implementation | Time | Throughput |
 |---|---:|---:|
-| naive | 10.146156 sec | 18.80 MiB/s |
-| table | 2.011472 sec | 94.82 MiB/s |
-| zlib | 0.482699 sec | 395.14 MiB/s |
+| naive | 2.994939 sec | 63.69 MiB/s |
+| table | 0.585063 sec | 326.01 MiB/s |
+| 4-slice | 0.185052 sec | 1030.71 MiB/s |
+| zlib | 0.121995 sec | 1563.47 MiB/s |
 
 ## Benchmark Notes
 

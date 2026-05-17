@@ -43,9 +43,8 @@ int main() {
     std::vector<crcImpl> implementations = {
         {"naive", compute_checksum_naive},
         {"table", compute_checksum_table},
-
-        // Later:
-        // {"fast", compute_checksum_fast},
+        {"4-slice", compute_checksum_four_slice},
+        {"8-slice", compute_checksum_eight_slice},
     };
 
 #ifdef HAS_ZLIB
