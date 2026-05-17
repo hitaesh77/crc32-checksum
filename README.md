@@ -43,6 +43,7 @@ Several CRC32 implementations are being written and tested:
 - Naive bit-by-bit CRC32
 - Table-based CRC32 with a compile-time generated lookup table
 - Slicing by 4 Table-based CRC32 with a 4x256 compile-time generated lookup table
+- Slicing by 8 Table-based CRC32 with a 8x256 compile-time generated lookup table
 - `zlib` CRC32 reference comparison
 
 All implementations are run through the same correctness tests and benchmarks.
@@ -127,43 +128,40 @@ g++ -std=c++17 -O2 -Wall -Wextra -DHAS_ZLIB main.cpp checksum.cpp test_common.cp
 
 | Implementation | Time | Throughput |
 |---|---:|---:|
-| naive | 2.162318 sec | 46.25 MiB/s |
-| table | 0.412293 sec | 242.55 MiB/s |
-| 4-slice | 0.154004 sec | 649.33 MiB/s |
-| zlib | 0.089788 sec | 1113.73 MiB/s |
+| naive | 1.544475 sec | 64.75 MiB/s |
+| table | 0.280905 sec | 355.99 MiB/s |
+| 4-slice | 0.087268 sec | 1145.89 MiB/s |
+| 8-slice | 0.154004 sec | 1340.07 MiB/s |
+| zlib | 0.065098 sec | 1536.16 MiB/s |
 
 ### Encoded TickDB Payload, 100k Ticks, 100 Iterations
 
 | Implementation | Time | Throughput |
 |---|---:|---:|
-| naive | 2.994939 sec | 63.69 MiB/s |
-| table | 0.585063 sec | 326.01 MiB/s |
-| 4-slice | 0.185052 sec | 1030.71 MiB/s |
-| zlib | 0.121995 sec | 1563.47 MiB/s |
+| naive | 2.807496 sec | 67.94 MiB/s |
+| table | 0.545248 sec | 349.81 MiB/s |
+| 4-slice | 0.139663 sec | 1115.81 MiB/s |
+| 8-slice | 0.154004 sec | 1365.68 MiB/s |
+| zlib | 0.110182 sec | 1731.10 MiB/s |
 
 ## Benchmark Notes
 
-The table-based version is much faster than the naive version, which is expected because it replaces the 8-round bit loop with a lookup table.
+The table-based version is much faster than the naive version, which is expected because it replaces the 8-round bit loop with a lookup table. The 4-slice is another big leap in performance, which is expected due to being able to calculate 4 bytes at once. However, while the 8-slice did see an improvement, it was marginal, which may be due to the fact that our data size is not large enough to see a bigger improvment.
 
-On the random byte benchmark, the table version is about 3.9x faster than the naive version.
+On the both the random byte benchmark and the TickDB payload benchark, the 8-slice version is about 20x faster than the naive version.
 
-On the encoded TickDB payload benchmark, the table version is about 5.0x faster than the naive version.
+`zlib` is still marginally faster than the 8-slice implementations, which I predict wil have a lrager and larger gap as payloads increase. 
 
-`zlib` is still significantly faster than both custom implementations, so it is currently the likely choice for the final TickDB WAL checksum unless a later optimized implementation gets closer.
-
-## Future Work
+## Work Done
 
 | Implementation | Status | Notes |
 |---|---|---|
 | Naive CRC32 | Complete | Correct but slow |
 | Table CRC32 | Complete | Correct and faster than naive |
-| Optimized CRC32 | Planned | Could use slicing-by-4, slicing-by-8, or hardware support |
+| 4-slice CRC32 | Complete | Correct and faster than table |
+| 8-slice CRC32 | Complete | Correct and faster than 4-slice |
 | zlib CRC32 | Tested | Current reference implementation |
 
-## Next Steps
+## Results
 
-1. Clean up the checksum API.
-2. Optionally try a slicing-by-4 or slicing-by-8 implementation.
-3. Compare optimized versions against `zlib`.
-4. Decide whether TickDB should use my implementation or `zlib`.
-5. Integrate CRC32 into the TickDB WAL.
+As it can be seen from the Benchmark tests, `zlib` is able to stay consistently faster than my implementations of the crc32 checksum. For this reason, the final version of TickDB will likely use the `zlib` library.
